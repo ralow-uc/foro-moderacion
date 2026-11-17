@@ -1,0 +1,10 @@
+./scripts/test.sh  (2026-11-17 13:14)
+
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.569 s -- in com.foro.moderacion.ForoModeracionApplicationTests
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.081 s -- in com.foro.moderacion.controller.SancionControllerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.379 s -- in com.foro.moderacion.controller.NormaControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.foro.moderacion.controller.ReporteControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.foro.moderacion.cliente.ClienteForoTemasTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.foro.moderacion.estrategia.FabricaDeEstrategiasDeModeracionTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
