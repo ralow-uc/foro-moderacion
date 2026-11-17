@@ -2,6 +2,8 @@ package com.foro.moderacion.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,8 +17,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Entidad JPA de ejemplo generada por el arquetipo. Se mapea a la tabla
- * NORMA (ver scripts/01_crear_tablas.sql).
+ * Norma de convivencia del foro (ej. "N2 - Sin spam ni publicidad").
+ *
+ * Cada reporte y cada sancion citan la norma que se incumplio, de modo que la
+ * moderacion sea trazable y no arbitraria. Generada con el arquetipo como
+ * entidad de ejemplo y ampliada con el codigo y la gravedad.
+ * Se mapea a la tabla NORMA (ver scripts/01_crear_tablas.sql).
  *
  * Convenciones que el arquetipo deja fijadas para todas las entidades:
  *   - ID por secuencia de Oracle con allocationSize = 1.
@@ -34,11 +40,19 @@ public class Norma {
     @Column(name = "ID")
     private Long id;
 
+    /** Codigo corto y unico con el que se cita la norma: N1, N2... */
+    @Column(name = "CODIGO", nullable = false, unique = true, length = 10)
+    private String codigo;
+
     @Column(name = "NOMBRE", nullable = false, unique = true, length = 100)
     private String nombre;
 
     @Column(name = "DESCRIPCION", length = 400)
     private String descripcion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "GRAVEDAD", nullable = false, length = 10)
+    private Gravedad gravedad = Gravedad.LEVE;
 
     @Column(name = "ACTIVO", nullable = false)
     @Convert(converter = NumericBooleanConverter.class)
@@ -51,9 +65,11 @@ public class Norma {
         // Constructor requerido por JPA.
     }
 
-    public Norma(String nombre, String descripcion) {
+    public Norma(String codigo, String nombre, String descripcion, Gravedad gravedad) {
+        this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.gravedad = gravedad;
     }
 
     @PrePersist
@@ -65,6 +81,22 @@ public class Norma {
 
     public Long getId() {
         return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public Gravedad getGravedad() {
+        return gravedad;
+    }
+
+    public void setGravedad(Gravedad gravedad) {
+        this.gravedad = gravedad;
     }
 
     public String getNombre() {

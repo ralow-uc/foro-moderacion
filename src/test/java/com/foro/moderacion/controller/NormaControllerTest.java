@@ -1,6 +1,7 @@
 package com.foro.moderacion.controller;
 
 import com.foro.moderacion.dto.NormaRequest;
+import com.foro.moderacion.model.Gravedad;
 import com.foro.moderacion.repository.NormaRepository;
 import com.foro.moderacion.security.GeneradorDeTokensDePrueba;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,9 +62,9 @@ class NormaControllerTest {
     void crudCompletoConAdmin() throws Exception {
         String respuesta = mockMvc.perform(post("/api/normas").header("Authorization", tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(new NormaRequest("Ejemplo", "Registro de prueba", true))))
+                        .content(json(new NormaRequest("N1", "Respeto", "Trata a los demas con respeto.", Gravedad.GRAVE, true))))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nombre").value("Ejemplo"))
+                .andExpect(jsonPath("$.codigo").value("N1"))
                 .andReturn().getResponse().getContentAsString();
         long id = objectMapper.readTree(respuesta).get("id").asLong();
 
@@ -73,9 +74,9 @@ class NormaControllerTest {
 
         mockMvc.perform(put("/api/normas/{id}", id).header("Authorization", tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(new NormaRequest("Ejemplo editado", null, false))))
+                        .content(json(new NormaRequest("N1", "Respeto entre usuarios", "Sin insultos.", Gravedad.CRITICA, false))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Ejemplo editado"));
+                .andExpect(jsonPath("$.gravedad").value("CRITICA"));
 
         mockMvc.perform(delete("/api/normas/{id}", id).header("Authorization", tokenAdmin))
                 .andExpect(status().isNoContent());
@@ -87,7 +88,7 @@ class NormaControllerTest {
     @Test
     @DisplayName("Escribir exige token (401) y rol ADMIN (403)")
     void escribirExigeAdmin() throws Exception {
-        String cuerpo = json(new NormaRequest("Ejemplo", null, true));
+        String cuerpo = json(new NormaRequest("N1", "Respeto", "Trata a los demas con respeto.", Gravedad.LEVE, true));
 
         mockMvc.perform(post("/api/normas").contentType(MediaType.APPLICATION_JSON).content(cuerpo))
                 .andExpect(status().isUnauthorized());
@@ -102,10 +103,25 @@ class NormaControllerTest {
     void datosInvalidos() throws Exception {
         mockMvc.perform(post("/api/normas").header("Authorization", tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(new NormaRequest("x", null, null))))
+                        .content(json(new NormaRequest("X1", "x", "", null, null))))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.codigo").exists())
                 .andExpect(jsonPath("$.errores.nombre").exists())
+                .andExpect(jsonPath("$.errores.gravedad").exists())
                 .andExpect(jsonPath("$.errores.activo").exists());
+    }
+
+    @Test
+    @DisplayName("Codigo duplicado responde 409")
+    void codigoDuplicado() throws Exception {
+        String cuerpo = json(new NormaRequest("N1", "Respeto", "Trata a los demas con respeto.", Gravedad.LEVE, true));
+        mockMvc.perform(post("/api/normas").header("Authorization", tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON).content(cuerpo))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/normas").header("Authorization", tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(new NormaRequest("n1", "Otra", "Otra norma.", Gravedad.LEVE, true))))
+                .andExpect(status().isConflict());
     }
 
     @Test
