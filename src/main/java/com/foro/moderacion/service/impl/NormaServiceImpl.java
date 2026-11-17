@@ -41,8 +41,8 @@ public class NormaServiceImpl implements NormaService {
     @Transactional(readOnly = true)
     public List<NormaResponse> listar(boolean soloActivos) {
         List<Norma> resultado = soloActivos
-                ? normaRepository.findByActivoTrueOrderByNombreAsc()
-                : normaRepository.findAllByOrderByNombreAsc();
+                ? normaRepository.findByActivoTrueOrderByCodigoAsc()
+                : normaRepository.findAllByOrderByCodigoAsc();
         return resultado.stream().map(NormaResponse::desde).toList();
     }
 

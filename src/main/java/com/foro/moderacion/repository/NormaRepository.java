@@ -21,7 +21,7 @@ public interface NormaRepository extends JpaRepository<Norma, Long> {
 
     boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 
-    List<Norma> findByActivoTrueOrderByNombreAsc();
+    List<Norma> findByActivoTrueOrderByCodigoAsc();
 
-    List<Norma> findAllByOrderByNombreAsc();
+    List<Norma> findAllByOrderByCodigoAsc();
 }
