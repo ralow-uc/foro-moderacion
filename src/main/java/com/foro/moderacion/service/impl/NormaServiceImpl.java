@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Logica de negocio de Norma: el nombre es unico sin distinguir mayusculas.
+ * Logica de negocio de las normas: el codigo y el nombre son unicos sin
+ * distinguir mayusculas. El codigo se guarda siempre en mayusculas (N1, N2...).
  */
 @Service
 public class NormaServiceImpl implements NormaService {
@@ -47,13 +48,17 @@ public class NormaServiceImpl implements NormaService {
     @Transactional
     public NormaResponse crear(NormaRequest solicitud) {
         String nombre = solicitud.nombre().trim();
-        if (normaRepository.existsByNombreIgnoreCase(nombre)) {
-            throw new DatosDuplicadosException("Ya existe un registro con el nombre '" + nombre + "'");
+        String codigo = solicitud.codigo().trim().toUpperCase();
+        if (normaRepository.existsByCodigoIgnoreCase(codigo)) {
+            throw new DatosDuplicadosException("Ya existe una norma con el codigo '" + codigo + "'");
         }
-        Norma nuevo = new Norma(nombre, solicitud.descripcion());
+        if (normaRepository.existsByNombreIgnoreCase(nombre)) {
+            throw new DatosDuplicadosException("Ya existe una norma con el nombre '" + nombre + "'");
+        }
+        Norma nuevo = new Norma(codigo, nombre, solicitud.descripcion().trim(), solicitud.gravedad());
         nuevo.setActivo(solicitud.activo());
         Norma guardado = normaRepository.save(nuevo);
-        log.debug("Norma {} creado", guardado.getId());
+        log.debug("Norma {} creada", guardado.getId());
         return NormaResponse.desde(guardado);
     }
 
@@ -62,11 +67,17 @@ public class NormaServiceImpl implements NormaService {
     public NormaResponse actualizar(Long id, NormaRequest solicitud) {
         Norma existente = buscarOFallar(id);
         String nombre = solicitud.nombre().trim();
-        if (normaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id)) {
-            throw new DatosDuplicadosException("Ya existe un registro con el nombre '" + nombre + "'");
+        String codigo = solicitud.codigo().trim().toUpperCase();
+        if (normaRepository.existsByCodigoIgnoreCaseAndIdNot(codigo, id)) {
+            throw new DatosDuplicadosException("Ya existe una norma con el codigo '" + codigo + "'");
         }
+        if (normaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id)) {
+            throw new DatosDuplicadosException("Ya existe una norma con el nombre '" + nombre + "'");
+        }
+        existente.setCodigo(codigo);
         existente.setNombre(nombre);
-        existente.setDescripcion(solicitud.descripcion());
+        existente.setDescripcion(solicitud.descripcion().trim());
+        existente.setGravedad(solicitud.gravedad());
         existente.setActivo(solicitud.activo());
         return NormaResponse.desde(normaRepository.save(existente));
     }
@@ -75,11 +86,11 @@ public class NormaServiceImpl implements NormaService {
     @Transactional
     public void eliminar(Long id) {
         normaRepository.delete(buscarOFallar(id));
-        log.debug("Norma {} eliminado", id);
+        log.debug("Norma {} eliminada", id);
     }
 
     private Norma buscarOFallar(Long id) {
         return normaRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Norma", id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("la norma", id));
     }
 }

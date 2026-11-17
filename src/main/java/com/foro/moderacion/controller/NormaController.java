@@ -20,7 +20,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 /**
- * Controlador REST de Norma generado por el arquetipo.
+ * Controlador REST de las normas del foro (generado por el arquetipo).
+ * Leerlas es publico porque el frontend las muestra a todos los usuarios;
+ * administrarlas es exclusivo del ADMIN.
  *
  *   GET    /api/normas          Lista (publico). ?soloActivos=true filtra.
  *   GET    /api/normas/{id}     Detalle (publico).

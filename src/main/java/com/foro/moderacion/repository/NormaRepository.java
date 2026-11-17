@@ -7,13 +7,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repositorio JPA de Norma. Al extender JpaRepository se obtiene el CRUD
+ * Repositorio JPA de las normas del foro. Al extender JpaRepository se obtiene el CRUD
  * contra Oracle sin escribir SQL; las consultas propias se derivan del nombre.
  */
 @Repository
 public interface NormaRepository extends JpaRepository<Norma, Long> {
 
     boolean existsByNombreIgnoreCase(String nombre);
+
+    boolean existsByCodigoIgnoreCase(String codigo);
+
+    boolean existsByCodigoIgnoreCaseAndIdNot(String codigo, Long id);
 
     boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 
