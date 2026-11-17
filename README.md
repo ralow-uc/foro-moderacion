@@ -14,6 +14,7 @@ arquetipo propio** [`microservicio-arquetipo`](../microservicio-arquetipo).
 | Responsabilidad | Normas, reportes y sanciones; aplica los baneos en `foro-temas` |
 | Tablas propias | `NORMA`, `REPORTE`, `SANCION` (esquema `FORO`, Oracle Cloud) |
 | Patrones de diseño | **Strategy + Factory** (moderación por tipo de contenido), **Adapter** (cliente HTTP de `foro-temas`) |
+| Versión | `v1.0.1` |
 | Arquetipo | `com.foro:microservicio-arquetipo:1.0.0` |
 
 **Asignatura:** Desarrollo Full Stack III (DSY2205) · Experiencia 2, Semana 5
@@ -110,7 +111,7 @@ foránea**: cada microservicio es dueño de sus tablas.
 ```bash
 ./mvnw spring-boot:run          # perfil local (H2, siembra datos), puerto 8083
 ./scripts/run.sh                # perfil oracle, credenciales del Llavero
-./scripts/test.sh               # 27 pruebas
+./scripts/test.sh               # 29 pruebas
 docker build -t foro-moderacion . && docker run -p 8083:8083 -e SPRING_PROFILES_ACTIVE=local foro-moderacion
 ```
 
@@ -170,7 +171,7 @@ GET /api/temas/{id} en foro-temas ──▶ 410 Gone "Contenido moderado"
 ## 9. Pruebas
 
 ```bash
-./scripts/test.sh     # 27 pruebas, H2 en modo Oracle, sin red
+./scripts/test.sh     # 29 pruebas, H2 en modo Oracle, sin red
 ```
 
 | Clase | Pruebas | Qué cubre |
@@ -178,7 +179,7 @@ GET /api/temas/{id} en foro-temas ──▶ 410 Gone "Contenido moderado"
 | `NormaControllerTest` | 5 | CRUD, 401/403, validaciones, código duplicado (generada por el arquetipo y adaptada) |
 | `ReporteControllerTest` | 6 | Reportar, duplicados, bandeja por rol, descartar, enums inválidos, norma citada |
 | `SancionControllerTest` | 8 | Banear tema y comentario (estrategia correcta), JWT reenviado, reportes aceptados, duplicado, 404 de foro-temas, levantar solo ADMIN, filtros |
-| `ClienteForoTemasTest` | 4 | Adapter: petición armada y traducción de 404 / 403 / 500 |
+| `ClienteForoTemasTest` | 6 | Adapter: petición armada; traducción de 404 / 403 / 500, host inalcanzable y respuesta sin cuerpo |
 | `FabricaDeEstrategiasDeModeracionTest` | 3 | Factory: estrategia por tipo, falta o duplicado de estrategia |
 | `ForoModeracionApplicationTests` | 1 | Arranque del contexto |
 

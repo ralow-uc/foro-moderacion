@@ -14,7 +14,7 @@
 
     <groupId>com.foro</groupId>
     <artifactId>foro-moderacion</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>foro-moderacion</name>
     <description>Microservicio de moderacion del foro: normas, reportes y sanciones sobre temas y comentarios</description>
 
