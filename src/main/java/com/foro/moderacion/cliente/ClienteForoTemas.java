@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClient;
 
 /**
@@ -19,7 +20,8 @@ import org.springframework.web.client.RestClient;
  *
  *   404 de foro-temas      -> RecursoNoEncontradoException   (404 aqui)
  *   401 / 403 de foro-temas -> OperacionNoPermitidaException (403 aqui)
- *   otro error o sin red   -> ServicioNoDisponibleException  (503 aqui)
+ *   otro error, sin red o
+ *   respuesta ilegible     -> ServicioNoDisponibleException  (503 aqui)
  *
  * Asi el resto del codigo no sabe que hay HTTP de por medio: las estrategias de
  * moderacion piden "banear este tema" y reciben un ContenidoModerado.
@@ -48,8 +50,9 @@ public class ClienteForoTemas {
     public ContenidoModerado moderar(String ruta, String descripcion, Long contenidoId,
                                      OrdenDeModeracion orden, String autorizacion) {
         log.debug("PUT foro-temas {} id={} baneado={}", ruta, contenidoId, orden.baneado());
+        ContenidoModerado contenido;
         try {
-            return restClient.put()
+            contenido = restClient.put()
                     .uri(ruta, contenidoId)
                     .header(HttpHeaders.AUTHORIZATION, autorizacion)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -70,6 +73,14 @@ public class ClienteForoTemas {
                     .body(ContenidoModerado.class);
         } catch (ResourceAccessException e) {
             throw new ServicioNoDisponibleException("No se pudo contactar a foro-temas", e);
+        } catch (RestClientException e) {
+            // Respondio algo que no es la API de foro-temas (cuerpo vacio o que no es
+            // JSON): por ejemplo un proxy o la red de Docker con el contenedor caido.
+            throw new ServicioNoDisponibleException("foro-temas devolvio una respuesta ilegible", e);
         }
+        if (contenido == null || contenido.id() == null) {
+            throw new ServicioNoDisponibleException("foro-temas respondio sin el contenido moderado");
+        }
+        return contenido;
     }
 }

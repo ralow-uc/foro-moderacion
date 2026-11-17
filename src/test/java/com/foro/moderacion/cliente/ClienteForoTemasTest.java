@@ -90,4 +90,27 @@ class ClienteForoTemasTest {
         assertThatThrownBy(() -> cliente.moderar(RUTA, "el tema", 7L, new OrdenDeModeracion(true, "x"), TOKEN))
                 .isInstanceOf(ServicioNoDisponibleException.class);
     }
+
+    @Test
+    @DisplayName("Si foro-temas no existe en la red (host que no resuelve), responde ServicioNoDisponible")
+    void hostInalcanzable() {
+        // Mismo RestClient que en produccion (ConfiguracionClienteForoTemas), apuntando
+        // a un nombre que no resuelve: es lo que ve el contenedor cuando foro-temas esta caido.
+        RestClient real = new ConfiguracionClienteForoTemas()
+                .restClientForoTemas(RestClient.builder(), "http://foro-temas.invalid:8082");
+        ClienteForoTemas clienteReal = new ClienteForoTemas(real);
+
+        assertThatThrownBy(() -> clienteReal.moderar(RUTA, "el tema", 7L, new OrdenDeModeracion(true, "x"), TOKEN))
+                .isInstanceOf(ServicioNoDisponibleException.class);
+    }
+
+    @Test
+    @DisplayName("Una respuesta 200 sin cuerpo JSON se trata como servicio no disponible")
+    void respuestaSinCuerpo() {
+        servidor.expect(requestTo("http://foro-temas.prueba/api/moderacion/temas/7"))
+                .andRespond(withSuccess());
+
+        assertThatThrownBy(() -> cliente.moderar(RUTA, "el tema", 7L, new OrdenDeModeracion(true, "x"), TOKEN))
+                .isInstanceOf(ServicioNoDisponibleException.class);
+    }
 }

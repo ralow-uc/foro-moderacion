@@ -30,7 +30,7 @@
 |---|---|---|---|
 | `foro-usuarios` | v2.0.0 | `ROL`, `USUARIO`, `USUARIO_ROL` | S2; en S5 se le agregan Docker, CI y CORS configurable |
 | `foro-temas` | v2.0.0 | `CATEGORIA`, `TEMA`, `COMENTARIO` | S2; en S5, columnas y endpoints de moderación |
-| `foro-moderacion` | v1.0.0 | `NORMA`, `REPORTE`, `SANCION` | **generado con `microservicio-arquetipo`** |
+| `foro-moderacion` | v1.0.1 | `NORMA`, `REPORTE`, `SANCION` | **generado con `microservicio-arquetipo`** |
 | `microservicio-arquetipo` | v1.0.0 | — | extraído de la estructura común de los dos primeros |
 | `foro-web` | v1.0.0 | — | Angular 22 + Bootstrap 5.3 |
 
