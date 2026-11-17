@@ -1,0 +1,312 @@
+Coleccion postman/foro-online.postman_collection.json ejecutada con newman
+contra los tres microservicios en perfil local (H2), 2026-11-17 12:59.
+
+Foro en Linea CuboClub - 3 microservicios (S5)
+
+→ 00 - Estado de foro-usuarios
+  GET http://localhost:8081/api/estado [200 OK, 571B, 11ms]
+  ✓  HTTP 200
+  ✓  conectado a la base de datos
+
+→ 01 - Estado de foro-temas
+  GET http://localhost:8082/api/estado [200 OK, 568B, 3ms]
+  ✓  HTTP 200
+  ✓  es el otro microservicio
+  ✓  conectado a la base de datos
+
+→ 02 - GET categorias (publico)
+  GET http://localhost:8082/api/categorias [200 OK, 1.55kB, 4ms]
+  ✓  HTTP 200
+  ✓  hay al menos 5 categorias
+
+→ 03 - GET temas paginados (publico)
+  GET http://localhost:8082/api/temas?pagina=0&tamano=5 [200 OK, 3.03kB, 7ms]
+  ✓  HTTP 200
+  ✓  viene paginado
+
+→ 04 - GET temas por texto
+  GET http://localhost:8082/api/temas?texto=cfop [200 OK, 1.02kB, 4ms]
+  ✓  HTTP 200
+  ✓  todos los resultados contienen el texto
+
+→ 05 - GET temas por autor y categoria
+  GET http://localhost:8082/api/temas?autor=feliks&categoria=2 [200 OK, 531B, 2ms]
+  ✓  HTTP 200
+  ✓  todos son del autor pedido
+
+→ 06 - GET detalle de un tema (publico)
+  GET http://localhost:8082/api/temas/9 [200 OK, 1.12kB, 4ms]
+  ✓  HTTP 200
+  ✓  trae la lista de comentarios
+
+→ 07 - POST registro de un usuario nuevo
+  POST http://localhost:8081/api/usuarios [201 Created, 663B, 64ms]
+  ✓  HTTP 201
+  ✓  rol USUARIO por omision
+  ✓  no devuelve la contrasena
+
+→ 08 - POST login del usuario nuevo
+  POST http://localhost:8081/api/auth/login [200 OK, 772B, 62ms]
+  ✓  HTTP 200
+  ✓  devuelve un token Bearer
+
+→ 09 - POST publicar un tema
+  POST http://localhost:8082/api/temas [201 Created, 897B, 4ms]
+  ✓  HTTP 201
+  ✓  el autor sale del token
+
+→ 10 - POST comentar el tema
+  POST http://localhost:8082/api/temas/14/comentarios [201 Created, 716B, 5ms]
+  ✓  HTTP 201
+  ✓  queda ligado al tema
+
+→ 11 - GET el tema recien creado
+  GET http://localhost:8082/api/temas/14 [200 OK, 1.08kB, 3ms]
+  ✓  HTTP 200
+  ✓  tiene un comentario
+
+→ 12 - PUT editar el propio tema
+  PUT http://localhost:8082/api/temas/14 [200 OK, 834B, 4ms]
+  ✓  HTTP 200
+  ✓  el titulo cambio
+
+→ 13 - PUT editar un tema ajeno (403)
+  PUT http://localhost:8082/api/temas/9 [403 Forbidden, 631B, 3ms]
+  ✓  HTTP 403
+  ✓  explica el motivo
+
+→ 14 - GET usuarios con rol USUARIO (403)
+  GET http://localhost:8081/api/usuarios [403 Forbidden, 585B, 3ms]
+  ✓  HTTP 403
+
+→ 15 - GET usuarios sin token (401)
+  GET http://localhost:8081/api/usuarios [401 Unauthorized, 398B, 2ms]
+  ✓  HTTP 401
+
+→ 16 - POST login de admin
+  POST http://localhost:8081/api/auth/login [200 OK, 753B, 61ms]
+  ✓  HTTP 200
+  ✓  tiene el rol ADMIN
+
+→ 17 - GET usuarios con rol ADMIN (200)
+  GET http://localhost:8081/api/usuarios [200 OK, 1.5kB, 6ms]
+  ✓  HTTP 200
+  ✓  hay al menos 3 usuarios
+  ✓  ninguna respuesta expone el hash
+
+→ 18 - PUT promover al usuario nuevo (ADMIN)
+  PUT http://localhost:8081/api/usuarios/8/roles [200 OK, 623B, 5ms]
+  ✓  HTTP 200
+  ✓  ahora es MODERADOR
+
+→ 19 - DELETE el tema con ADMIN (204)
+  DELETE http://localhost:8082/api/temas/14 [204 No Content, 377B, 4ms]
+  ✓  HTTP 204
+
+→ 20 - GET el tema borrado (404)
+  GET http://localhost:8082/api/temas/14 [404 Not Found, 603B, 2ms]
+  ✓  HTTP 404
+  ✓  lo dice con claridad
+
+→ 21 - POST login de una cuenta de baja (401)
+  POST http://localhost:8081/api/auth/login [401 Unauthorized, 624B, 4ms]
+  ✓  HTTP 401
+  ✓  mensaje generico
+
+→ 22 - POST tema con token manipulado (401)
+  POST http://localhost:8082/api/temas [401 Unauthorized, 398B, 2ms]
+  ✓  HTTP 401
+
+→ 23 - POST tema con datos invalidos (400)
+  POST http://localhost:8082/api/temas [400 Bad Request, 736B, 3ms]
+  ✓  HTTP 400
+  ✓  indica los dos campos invalidos
+
+→ 24 - DELETE la cuenta de prueba (ADMIN)
+  DELETE http://localhost:8081/api/usuarios/8 [204 No Content, 377B, 5ms]
+  ✓  HTTP 204
+
+→ 25 - Estado de foro-moderacion
+  GET http://localhost:8083/api/estado [200 OK, 573B, 2ms]
+  ✓  HTTP 200
+  ✓  servicio foro-moderacion
+
+→ 26 - GET normas del foro (publico)
+  GET http://localhost:8083/api/normas [200 OK, 2.08kB, 3ms]
+  ✓  HTTP 200
+  ✓  hay al menos 5 normas
+
+→ 27 - POST login de moderadora (MODERADOR)
+  POST http://localhost:8081/api/auth/login [200 OK, 799B, 61ms]
+  ✓  HTTP 200
+  ✓  tiene el rol MODERADOR
+
+→ 28 - POST login de feliks (USUARIO)
+  POST http://localhost:8081/api/auth/login [200 OK, 760B, 61ms]
+  ✓  HTTP 200
+  ✓  tiene el rol USUARIO
+
+→ 29 - POST feliks publica un tema con publicidad
+  POST http://localhost:8082/api/temas [201 Created, 883B, 4ms]
+  ✓  HTTP 201
+
+→ 30 - POST login de yiheng (USUARIO)
+  POST http://localhost:8081/api/auth/login [200 OK, 760B, 59ms]
+  ✓  HTTP 200
+  ✓  tiene el rol USUARIO
+
+→ 31 - POST yiheng reporta el tema (201)
+  POST http://localhost:8083/api/reportes [201 Created, 895B, 5ms]
+  ✓  HTTP 201
+  ✓  queda PENDIENTE
+  ✓  reportante tomado del token
+
+→ 32 - POST el mismo reporte otra vez (409)
+  POST http://localhost:8083/api/reportes [409 Conflict, 621B, 4ms]
+  ✓  HTTP 409
+
+→ 33 - POST feliks reporta un tema que si cumple las normas
+  POST http://localhost:8083/api/reportes [201 Created, 899B, 4ms]
+  ✓  HTTP 201
+
+→ 34 - GET mis reportes (yiheng)
+  GET http://localhost:8083/api/reportes/mios [200 OK, 1.74kB, 3ms]
+  ✓  HTTP 200
+  ✓  incluye el reporte recien creado
+
+→ 35 - GET bandeja de reportes con USUARIO (403)
+  GET http://localhost:8083/api/reportes [403 Forbidden, 585B, 3ms]
+  ✓  HTTP 403
+
+→ 36 - GET reportes pendientes con MODERADOR (200)
+  GET http://localhost:8083/api/reportes?estado=PENDIENTE [200 OK, 1.71kB, 3ms]
+  ✓  HTTP 200
+  ✓  todos pendientes
+  ✓  incluye los dos reportes nuevos
+
+→ 37 - POST sancion con USUARIO (403)
+  POST http://localhost:8083/api/sanciones [403 Forbidden, 586B, 3ms]
+  ✓  HTTP 403
+
+→ 38 - POST sancion: la moderadora banea el tema (201)
+  POST http://localhost:8083/api/sanciones [201 Created, 1.09kB, 13ms]
+  ✓  HTTP 201
+  ✓  vigente
+  ✓  autor informado por foro-temas
+  ✓  acepto el reporte
+
+→ 39 - GET el tema baneado en foro-temas (410)
+  GET http://localhost:8082/api/temas/15 [410 Gone, 693B, 3ms]
+  ✓  HTTP 410
+  ✓  contenido moderado
+
+→ 40 - GET busqueda en foro-temas: el tema ya no aparece
+  GET http://localhost:8082/api/temas?texto=tienda online [200 OK, 531B, 3ms]
+  ✓  HTTP 200
+  ✓  sin resultados
+
+→ 41 - GET reporte aceptado
+  GET http://localhost:8083/api/reportes/9 [200 OK, 873B, 3ms]
+  ✓  HTTP 200
+  ✓  ACEPTADO
+
+→ 42 - POST sancion duplicada (409)
+  POST http://localhost:8083/api/sanciones [409 Conflict, 609B, 4ms]
+  ✓  HTTP 409
+
+→ 43 - POST sancion sobre un tema inexistente (404)
+  POST http://localhost:8083/api/sanciones [404 Not Found, 615B, 7ms]
+  ✓  HTTP 404
+
+→ 44 - POST sancion de un comentario (201)
+  POST http://localhost:8083/api/sanciones [201 Created, 1.12kB, 11ms]
+  ✓  HTTP 201
+  ✓  tipo COMENTARIO
+
+→ 45 - GET contenido baneado en foro-temas (MODERADOR)
+  GET http://localhost:8082/api/moderacion/baneados [200 OK, 980B, 4ms]
+  ✓  HTTP 200
+  ✓  incluye el tema baneado
+
+→ 46 - PUT descartar otro reporte pendiente (200)
+  PUT http://localhost:8083/api/reportes/10/descartar [200 OK, 878B, 4ms]
+  ✓  HTTP 200
+  ✓  DESCARTADO
+
+→ 47 - PUT levantar sancion con MODERADOR (403)
+  PUT http://localhost:8083/api/sanciones/8/levantar [403 Forbidden, 597B, 3ms]
+  ✓  HTTP 403
+
+→ 48 - POST login de admin (ADMIN)
+  POST http://localhost:8081/api/auth/login [200 OK, 753B, 61ms]
+  ✓  HTTP 200
+  ✓  tiene el rol ADMIN
+
+→ 49 - PUT levantar sancion con ADMIN (200)
+  PUT http://localhost:8083/api/sanciones/8/levantar [200 OK, 1.12kB, 9ms]
+  ✓  HTTP 200
+  ✓  ya no vigente
+  ✓  levantada por admin
+
+→ 50 - GET el tema restituido (200)
+  GET http://localhost:8082/api/temas/15 [200 OK, 824B, 4ms]
+  ✓  HTTP 200
+
+→ 51 - GET historial de sanciones de feliks
+  GET http://localhost:8083/api/sanciones/autor/3 [200 OK, 3.91kB, 4ms]
+  ✓  HTTP 200
+  ✓  al menos una
+
+→ 52 - GET sanciones vigentes
+  GET http://localhost:8083/api/sanciones?vigente=true [200 OK, 1.08kB, 3ms]
+  ✓  HTTP 200
+  ✓  todas vigentes
+
+→ 53 - POST norma nueva con ADMIN (201)
+  POST http://localhost:8083/api/normas [201 Created, 716B, 5ms]
+  ✓  HTTP 201
+
+→ 54 - POST norma con USUARIO (403)
+  POST http://localhost:8083/api/normas [403 Forbidden, 583B, 4ms]
+  ✓  HTTP 403
+
+→ 55 - PUT editar la norma (200)
+  PUT http://localhost:8083/api/normas/9 [200 OK, 656B, 5ms]
+  ✓  HTTP 200
+  ✓  CRITICA
+
+→ 56 - DELETE la norma (204)
+  DELETE http://localhost:8083/api/normas/9 [204 No Content, 377B, 4ms]
+  ✓  HTTP 204
+
+→ 57 - POST reporte con tipo invalido (400)
+  POST http://localhost:8083/api/reportes [400 Bad Request, 682B, 2ms]
+  ✓  HTTP 400
+
+→ 58 - PUT levantar la sancion del comentario (limpieza)
+  PUT http://localhost:8083/api/sanciones/9/levantar [200 OK, 1.14kB, 9ms]
+  ✓  HTTP 200
+
+→ 59 - DELETE el tema de publicidad (limpieza)
+  DELETE http://localhost:8082/api/temas/15 [204 No Content, 377B, 4ms]
+  ✓  HTTP 204
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │               60 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               60 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │              108 │                0 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 1239ms                                    │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 27.98kB (approx)                         │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 11ms [min: 2ms, max: 64ms, s.d.: 18ms] │
+└───────────────────────────────────────────────────────────────┘
