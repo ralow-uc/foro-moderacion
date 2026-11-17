@@ -1,0 +1,21 @@
+Validacion del mapeo JPA contra los scripts SQL  (2026-11-17)
+=============================================================
+
+La base Oracle Autonomous Database estaba detenida por inactividad al cerrar
+esta version, asi que se valido el mapeo con el mismo mecanismo que usa el
+perfil oracle (spring.jpa.hibernate.ddl-auto=validate con OracleDialect), sobre
+H2 en modo Oracle cargado con los scripts de cada repositorio:
+
+  foro-moderacion v1.0.1   01_crear_tablas.sql + 02_datos_iniciales.sql
+                           -> arranca; GET /api/normas devuelve N1..N6 del SQL
+  foro-temas v2.0.0        01 + 02 + 03_moderacion_de_contenido.sql
+                           -> arranca; GET /api/temas devuelve los 9 temas del SQL
+  foro-usuarios v2.0.0     01 + 02 -> arranca
+
+Diferencias de H2 que hubo que salvar solo para esta prueba (no afectan a Oracle):
+  - una vista ALL_SEQUENCES sobre INFORMATION_SCHEMA.SEQUENCES (OracleDialect la consulta);
+  - los indices por funcion UPPER(...) de foro-temas, que H2 no admite;
+  - la consulta final de verificacion de 03, que lee USER_TAB_COLUMNS.
+
+Pendiente: la misma corrida contra Oracle Cloud con ./scripts/run.sh una vez
+iniciada la base.
