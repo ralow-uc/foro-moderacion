@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +35,19 @@ public class ManejadorGlobalDeErrores {
     public ProblemDetail manejarOperacionNoPermitida(OperacionNoPermitidaException ex) {
         log.debug("Operacion rechazada por falta de privilegios: {}", ex.getMessage());
         return detalle(HttpStatus.FORBIDDEN, "Operacion no permitida", ex.getMessage());
+    }
+
+    @ExceptionHandler(EstadoInvalidoException.class)
+    public ProblemDetail manejarEstadoInvalido(EstadoInvalidoException ex) {
+        return detalle(HttpStatus.CONFLICT, "Estado invalido", ex.getMessage());
+    }
+
+    /** Un JSON mal formado o un valor de enum inexistente (ej. tipoContenido=PERFIL). */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail manejarCuerpoIlegible(HttpMessageNotReadableException ex) {
+        return detalle(HttpStatus.BAD_REQUEST, "Cuerpo invalido",
+                "El cuerpo no es un JSON valido o tiene un valor no permitido. "
+                        + "tipoContenido admite TEMA o COMENTARIO; gravedad admite LEVE, GRAVE o CRITICA");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

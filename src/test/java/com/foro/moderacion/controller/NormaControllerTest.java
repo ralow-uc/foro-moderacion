@@ -3,6 +3,7 @@ package com.foro.moderacion.controller;
 import com.foro.moderacion.dto.NormaRequest;
 import com.foro.moderacion.model.Gravedad;
 import com.foro.moderacion.repository.NormaRepository;
+import com.foro.moderacion.repository.ReporteRepository;
 import com.foro.moderacion.security.GeneradorDeTokensDePrueba;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,11 +44,15 @@ class NormaControllerTest {
     @Autowired
     private NormaRepository normaRepository;
 
+    @Autowired
+    private ReporteRepository reporteRepository;
+
     private String tokenUsuario;
     private String tokenAdmin;
 
     @BeforeEach
     void prepararBase() {
+        reporteRepository.deleteAll();
         normaRepository.deleteAll();
         tokenUsuario = tokens.para(3L, "feliks", "USUARIO");
         tokenAdmin = tokens.para(1L, "admin", "ADMIN");

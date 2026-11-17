@@ -3,9 +3,11 @@ package com.foro.moderacion.service.impl;
 import com.foro.moderacion.dto.NormaRequest;
 import com.foro.moderacion.dto.NormaResponse;
 import com.foro.moderacion.exception.DatosDuplicadosException;
+import com.foro.moderacion.exception.EstadoInvalidoException;
 import com.foro.moderacion.exception.RecursoNoEncontradoException;
 import com.foro.moderacion.model.Norma;
 import com.foro.moderacion.repository.NormaRepository;
+import com.foro.moderacion.repository.ReporteRepository;
 import com.foro.moderacion.service.NormaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +26,11 @@ public class NormaServiceImpl implements NormaService {
     private static final Logger log = LoggerFactory.getLogger(NormaServiceImpl.class);
 
     private final NormaRepository normaRepository;
+    private final ReporteRepository reporteRepository;
 
-    public NormaServiceImpl(NormaRepository normaRepository) {
+    public NormaServiceImpl(NormaRepository normaRepository, ReporteRepository reporteRepository) {
         this.normaRepository = normaRepository;
+        this.reporteRepository = reporteRepository;
     }
 
     @Override
@@ -85,7 +89,14 @@ public class NormaServiceImpl implements NormaService {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        normaRepository.delete(buscarOFallar(id));
+        Norma norma = buscarOFallar(id);
+        // Una norma citada por reportes es parte del historial de moderacion:
+        // se desactiva (activo=false), pero no se borra.
+        if (reporteRepository.countByNormaId(id) > 0) {
+            throw new EstadoInvalidoException("La norma " + norma.getCodigo()
+                    + " esta citada en reportes; desactivala en lugar de eliminarla");
+        }
+        normaRepository.delete(norma);
         log.debug("Norma {} eliminada", id);
     }
 
