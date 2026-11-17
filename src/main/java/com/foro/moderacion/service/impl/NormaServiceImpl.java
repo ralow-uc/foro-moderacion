@@ -8,6 +8,7 @@ import com.foro.moderacion.exception.RecursoNoEncontradoException;
 import com.foro.moderacion.model.Norma;
 import com.foro.moderacion.repository.NormaRepository;
 import com.foro.moderacion.repository.ReporteRepository;
+import com.foro.moderacion.repository.SancionRepository;
 import com.foro.moderacion.service.NormaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +28,13 @@ public class NormaServiceImpl implements NormaService {
 
     private final NormaRepository normaRepository;
     private final ReporteRepository reporteRepository;
+    private final SancionRepository sancionRepository;
 
-    public NormaServiceImpl(NormaRepository normaRepository, ReporteRepository reporteRepository) {
+    public NormaServiceImpl(NormaRepository normaRepository, ReporteRepository reporteRepository,
+                            SancionRepository sancionRepository) {
         this.normaRepository = normaRepository;
         this.reporteRepository = reporteRepository;
+        this.sancionRepository = sancionRepository;
     }
 
     @Override
@@ -90,11 +94,11 @@ public class NormaServiceImpl implements NormaService {
     @Transactional
     public void eliminar(Long id) {
         Norma norma = buscarOFallar(id);
-        // Una norma citada por reportes es parte del historial de moderacion:
-        // se desactiva (activo=false), pero no se borra.
-        if (reporteRepository.countByNormaId(id) > 0) {
+        // Una norma citada por reportes o sanciones es parte del historial de
+        // moderacion: se desactiva (activo=false), pero no se borra.
+        if (reporteRepository.countByNormaId(id) > 0 || sancionRepository.countByNormaId(id) > 0) {
             throw new EstadoInvalidoException("La norma " + norma.getCodigo()
-                    + " esta citada en reportes; desactivala en lugar de eliminarla");
+                    + " esta citada en reportes o sanciones; desactivala en lugar de eliminarla");
         }
         normaRepository.delete(norma);
         log.debug("Norma {} eliminada", id);

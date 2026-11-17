@@ -37,6 +37,12 @@ public class ManejadorGlobalDeErrores {
         return detalle(HttpStatus.FORBIDDEN, "Operacion no permitida", ex.getMessage());
     }
 
+    @ExceptionHandler(ServicioNoDisponibleException.class)
+    public ProblemDetail manejarServicioNoDisponible(ServicioNoDisponibleException ex) {
+        log.warn("Dependencia no disponible: {}", ex.getMessage());
+        return detalle(HttpStatus.SERVICE_UNAVAILABLE, "Servicio no disponible", ex.getMessage());
+    }
+
     @ExceptionHandler(EstadoInvalidoException.class)
     public ProblemDetail manejarEstadoInvalido(EstadoInvalidoException ex) {
         return detalle(HttpStatus.CONFLICT, "Estado invalido", ex.getMessage());
