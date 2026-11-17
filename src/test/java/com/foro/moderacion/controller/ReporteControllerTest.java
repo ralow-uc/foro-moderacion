@@ -7,6 +7,7 @@ import com.foro.moderacion.model.Norma;
 import com.foro.moderacion.model.TipoContenido;
 import com.foro.moderacion.repository.NormaRepository;
 import com.foro.moderacion.repository.ReporteRepository;
+import com.foro.moderacion.repository.SancionRepository;
 import com.foro.moderacion.security.GeneradorDeTokensDePrueba;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +50,9 @@ class ReporteControllerTest {
     @Autowired
     private ReporteRepository reporteRepository;
 
+    @Autowired
+    private SancionRepository sancionRepository;
+
     private Long idNorma;
     private String tokenFeliks;
     private String tokenYiheng;
@@ -57,6 +61,7 @@ class ReporteControllerTest {
 
     @BeforeEach
     void prepararBase() {
+        sancionRepository.deleteAll();
         reporteRepository.deleteAll();
         normaRepository.deleteAll();
         idNorma = normaRepository.save(
