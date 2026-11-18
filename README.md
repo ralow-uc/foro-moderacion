@@ -66,7 +66,7 @@ src/main/java/com/foro/moderacion/
 ├── exception/     excepciones propias + manejador global (ProblemDetail)
 └── config/        datos de ejemplo del perfil local
 scripts/           00 esquema · 01 tablas · 02 datos · 99 borrar · consultas_demo · sql.sh · run.sh
-postman/           colección de los 3 microservicios + entornos local y Docker Cloud
+postman/           colección de los 3 microservicios + entornos local y Render
 Dockerfile         imagen multi-etapa (del arquetipo)
 ```
 
@@ -187,8 +187,9 @@ GET /api/temas/{id} en foro-temas ──▶ 410 Gone "Contenido moderado"
 
 `postman/foro-online.postman_collection.json` recorre los **tres** servicios
 (peticiones 00–59, 108 aserciones). Las 25–59 son de este microservicio. Para la
-nube, importa `postman/foro-docker-cloud.postman_environment.json` y pon las
-URL públicas de Play with Docker. Evidencia: `docs/registros/`.
+nube, importa `postman/foro-render.postman_environment.json`, que ya trae las
+URL públicas de Render (`https://foro-moderacion.onrender.com`, etc.).
+Evidencia: `docs/registros/`.
 
 ## 11. Ramas
 
