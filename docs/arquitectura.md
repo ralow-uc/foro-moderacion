@@ -83,12 +83,15 @@ evidencia y se restituye si un `ADMIN` levanta la sanción.
 | Levantar sanciones, administrar normas | no | no | no | **sí** |
 | Gestionar cuentas y roles, categorías | no | no | no | **sí** |
 
-## Despliegue en Docker Cloud
+## Despliegue en la nube (Render)
 
-Las cinco imágenes (tres microservicios, `foro-web`) se publican en Docker Hub
-y se levantan con `docker compose` en **Play with Docker**. El Wallet de Oracle
-**no va en ninguna imagen**: se sube a la instancia y se monta como volumen de
-solo lectura. Ver [`../foro-despliegue`](../../foro-despliegue/README.md).
+Los cuatro componentes (tres microservicios y `foro-web`) corren como
+contenedores Docker en **Render**, que construye cada imagen con el Dockerfile
+de su repositorio de GitHub (Blueprint `render.yaml` en `foro-despliegue`).
+`foro-moderacion` llama a `foro-temas` por su URL pública HTTPS. El Wallet de
+Oracle **no va en ninguna imagen**: el driver JDBC lo recibe en memoria, en
+base64, desde una variable secreta de Render. Ver
+[`../foro-despliegue`](../../foro-despliegue/README.md).
 
 ## Ramas
 
